@@ -1,1 +1,63 @@
+import hashlib
+import time
+import matplotlib.pyplot as plt
+
+def read_file(file_path):
+    with open(file_path, 'r', encoding='utf-8') as f:
+        return f.read().split()
+
+def create_n_grams(words, n):
+    n_grams = []
+    for i in range(len(words) - n + 1):
+        n_grams.append(' '.join(words[i:i + n]))
+    return n_grams
+
+def hash_n_grams(n_grams):
+    hashed = set()
+    for n_gram in n_grams:
+        hashed.add(hashlib.sha256(n_gram.encode()).hexdigest())
+    return hashed
+
+def is_plagiarized(library_file, suspected_file, library_size, n=5):
+    library_words = read_file(library_file)[:library_size]
+    library_n_grams = create_n_grams(library_words, n)
+    library_hashes = hash_n_grams(library_n_grams)
+
+    suspected_words = read_file(suspected_file)
+    suspected_n_grams = create_n_grams(suspected_words, n)
+    suspected_hashes = hash_n_grams(suspected_n_grams)
+
+    common_hashes = library_hashes.intersection(suspected_hashes)
+
+    plagiarism_ratio = len(common_hashes) / len(suspected_hashes)
+
+    return plagiarism_ratio > 0.5, plagiarism_ratio
+
+library_file = 'library.txt'
+suspected_file = 'paper.txt'
+
+# Read the library file and calculate the size of each part
+library_words = read_file(library_file)
+library_size = len(library_words)
+part_size = library_size // 71
+
+# Run plagiarism checks and measure time taken
+timings = []
+sizes = []
+
+for i in range(1, 71):
+    current_size = part_size * i
+    sizes.append(current_size)
+    start_time = time.time()
+    _, _ = is_plagiarized(library_file, suspected_file, current_size)
+    end_time = time.time()
+    timings.append(end_time - start_time)
+def scale_yaxis(x, pos):
+    return f'{x * 100:.0f}'
+# Plot the results
+plt.plot(sizes, timings)
+plt.xlabel('Library Size')
+plt.ylabel('Running Time (s)')
+plt.title('Time Complexity of Plagiarism Detection')
+plt.show()
 
