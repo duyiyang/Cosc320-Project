@@ -1,1 +1,45 @@
+import time
+import matplotlib.pyplot as plt
+
+def read_file(file_path):
+    with open(file_path, 'r', encoding='utf-8') as f:
+        return f.read().split()
+
+# ... (lcs_length and is_plagiarized functions remain the same)
+
+def measure_time(library_file, suspected_file, num_parts=20):
+    library_words = read_file(library_file)
+    suspected_words = read_file(suspected_file)
+
+    library_length = len(library_words)
+    part_length = library_length // num_parts
+    execution_times = []
+    words_count = []
+
+    for i in range(1, num_parts + 1):
+        start_index = 0
+        end_index = i * part_length
+        partial_library = library_words[start_index:end_index]
+
+        start_time = time.time()
+        lcs_len = lcs_length(partial_library, suspected_words)
+        end_time = time.time()
+
+        execution_times.append(end_time - start_time)
+        words_count.append(end_index)
+
+    return words_count, execution_times
+
+library_file = 'library.txt'
+suspected_file = 'paper.txt'
+
+# Measure execution times and words count
+words_count, execution_times = measure_time(library_file, suspected_file)
+
+# Plot the results
+plt.plot(words_count, execution_times)
+plt.xlabel("Number of Words in the Library")
+plt.ylabel("Execution Time (Seconds)")
+plt.title("Time Complexity of LCSS Algorithm")
+plt.show()
 
