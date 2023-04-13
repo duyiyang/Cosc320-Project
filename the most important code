@@ -80,7 +80,7 @@ def rabin_karp_search(pattern, text, prime=101):
     return False
 
 
-def get_library_parts(library, n_parts=5):
+def get_library_parts(library, n_parts=20):
     library_len = len(library)
     part_len = library_len // n_parts
     return [library[i:i + part_len] for i in range(0, library_len, part_len)]
